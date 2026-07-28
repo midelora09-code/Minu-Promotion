@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Minu Promotion</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-bolt"></i></div>
+            <span>MINUPROMO</span>
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item ripple active" onclick="switchTab('dashboard', this)">
+                <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </li>
+            <li class="nav-item ripple" onclick="switchTab('clients', this)">
+                <i class="fa-solid fa-users"></i> Clients
+            </li>
+            <li class="nav-item ripple" onclick="switchTab('projects', this)">
+                <i class="fa-solid fa-layer-group"></i> Projects
+            </li>
+            <li class="nav-item ripple" onclick="switchTab('tasks', this)">
+                <i class="fa-solid fa-bars-progress"></i> Task Tracker
+            </li>
+            <li class="nav-item ripple" onclick="switchTab('payments', this)">
+                <i class="fa-solid fa-wallet"></i> Payments
+            </li>
+            <li class="nav-item ripple" onclick="switchTab('settings', this)">
+                <i class="fa-solid fa-gear"></i> Settings
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        <header class="top-bar">
+            <div class="header-left">
+                <i class="fa-solid fa-bars menu-toggle" onclick="toggleSidebar()"></i>
+                <div class="page-title">
+                    <h1 id="pageHeading">Dashboard</h1>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <div style="position: relative;">
+                    <button class="action-btn-circle ripple" onclick="toggleNotifs()">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge-count" id="notifBadge">0</span>
+                    </button>
+                    <div class="notif-panel glass" id="notifPanel">
+                        <div class="notif-header">Alerts & Deadlines</div>
+                        <div id="notifList"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD TAB -->
+        <section id="dashboard" class="content-section active">
+            <div class="stats-grid">
+                <div class="card glass">
+                    <div class="card-header-sm">
+                        Total Clients
+                        <div class="card-icon" style="background: rgba(59, 130, 246, 0.2); color: var(--primary-blue);"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="card-value" id="statClients">0</div>
+                    <div class="card-subtext">Active Accounts</div>
+                </div>
+
+                <div class="card glass">
+                    <div class="card-header-sm">
+                        Total Revenue
+                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--success);"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                    </div>
+                    <div class="card-value" id="statIncome">₹0</div>
+                    <div class="card-subtext">Gross Earnings</div>
+                </div>
+
+                <div class="card glass">
+                    <div class="card-header-sm">
+                        Investment
+                        <div class="card-icon" style="background: rgba(239, 68, 68, 0.2); color: var(--danger);"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    </div>
+                    <div class="card-value" id="statInvestment">₹0</div>
+                    <div class="card-subtext">Total Costs</div>
+                </div>
+
+                <div class="card glass">
+                    <div class="card-header-sm">
+                        Net Profit
+                        <div class="card-icon" style="background: rgba(139, 92, 246, 0.2); color: var(--primary-purple);"><i class="fa-solid fa-chart-line"></i></div>
+                    </div>
+                    <div class="card-value" id="statProfit">₹0</div>
+                    <div class="card-subtext">Calculated Margin</div>
+                </div>
+            </div>
+
+            <div class="charts-container">
+                <div class="card glass chart-card">
+                    <h4>FINANCIAL ANALYTICS</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="financeChart"></canvas>
+                    </div>
+                </div>
+                <div class="card glass chart-card">
+                    <h4>PROJECT SPLIT</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="typeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="section-title">Recent Activity</h3>
+            <div class="table-container glass">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Client</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentProjectsTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- CLIENTS TAB -->
+        <section id="clients" class="content-section">
+            <div class="tab-header">
+                <h2>Clients Directory</h2>
+                <button class="btn-primary ripple" onclick="openModal('clientModal')">
+                    <i class="fa-solid fa-user-plus"></i> Add Client
+                </button>
+            </div>
+            
+            <div class="table-container glass">
+                <div class="table-toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted)"></i>
+                        <input type="text" id="clientSearch" placeholder="Search client name or business..." onkeyup="renderClients()">
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Client Name</th>
+                            <th>Phone</th>
+                            <th>Business</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PROJECTS TAB -->
+        <section id="projects" class="content-section">
+            <div class="tab-header">
+                <h2>Project Hub</h2>
+                <button class="btn-primary ripple" onclick="openModal('projectModal')">
+                    <i class="fa-solid fa-plus"></i> New Project
+                </button>
+            </div>
+
+            <div class="table-container glass">
+                <div class="table-toolbar">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted)"></i>
+                        <input type="text" id="projectSearch" placeholder="Search title or client name..." onkeyup="renderProjects()">
+                    </div>
+                    <div class="filter-group">
+                        <select id="statusFilter" onchange="renderProjects()">
+                            <option value="ALL">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                        <select id="typeFilter" onchange="renderProjects()">
+                            <option value="ALL">All Types</option>
+                            <option value="Video Editing">Editing</option>
+                            <option value="Promotion">Promotion</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Client</th>
+                            <th>Priority</th>
+                            <th>Type</th>
+                            <th>Deadline</th>
+                            <th>Payment</th>
+                            <th>Investment</th>
+                            <th>Profit</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TASK TRACKER TAB -->
+        <section id="tasks" class="content-section">
+            <div class="stats-grid">
+                <div class="card glass">
+                    <div class="card-header-sm">Editing Pending</div>
+                    <div class="card-value" style="color: var(--warning);" id="taskEditPending">0</div>
+                </div>
+                <div class="card glass">
+                    <div class="card-header-sm">Promo Pending</div>
+                    <div class="card-value" style="color: var(--primary-blue);" id="taskPromoPending">0</div>
+                </div>
+            </div>
+
+            <div class="card glass" style="margin-bottom: 20px;">
+                <div class="completion-header">
+                    <span>PROJECT COMPLETION RATE</span>
+                    <span id="completionRateText" style="color: var(--primary-purple);">0%</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="completionRateBar" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="table-container glass">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Priority</th>
+                            <th>Type</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="taskTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PAYMENTS TAB -->
+        <section id="payments" class="content-section">
+            <div class="stats-grid">
+                <div class="card glass">
+                    <div class="card-header-sm">Total Expected</div>
+                    <div class="card-value" id="payTotalEarnings">₹0</div>
+                </div>
+                <div class="card glass">
+                    <div class="card-header-sm">Received</div>
+                    <div class="card-value" style="color: var(--success);" id="payReceived">₹0</div>
+                </div>
+                <div class="card glass span-full-mobile">
+                    <div class="card-header-sm">Pending Dues</div>
+                    <div class="card-value" style="color: var(--danger);" id="payPending">₹0</div>
+                </div>
+            </div>
+
+            <div class="table-container glass">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Client</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paymentsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SETTINGS TAB -->
+        <section id="settings" class="content-section">
+            <div class="card glass" style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 12px; font-size: 1rem;">Backup & Data Control</h3>
+                <div class="settings-actions">
+                    <button class="btn-primary ripple" onclick="exportData()"><i class="fa-solid fa-download"></i> Export JSON Backup</button>
+                    <label class="btn-primary ripple restore-btn">
+                        <i class="fa-solid fa-upload"></i> Restore Backup
+                        <input type="file" id="importFileInput" style="display: none;" onchange="importData(event)">
+                    </label>
+                </div>
+            </div>
+
+            <div class="card glass danger-card">
+                <h3 style="margin-bottom: 8px; color: var(--danger); font-size: 1rem;">Danger Zone</h3>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 14px;">Data clear karne par double confirmation permission maangi jayegi.</p>
+                <button class="btn-danger ripple" onclick="clearAllDataDoubleConfirm()">
+                    Clear All App Data
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="fab ripple" onclick="openModal('projectModal')">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+
+    <!-- CLIENT MODAL -->
+    <div class="modal-overlay" id="clientModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="clientModalTitle" style="font-size: 1.1rem;">Add New Client</h3>
+                <button class="close-modal" onclick="closeModal('clientModal')">&times;</button>
+            </div>
+            <form id="clientForm" onsubmit="saveClient(event)">
+                <input type="hidden" id="clientId">
+                <div class="form-group">
+                    <label>Client Name *</label>
+                    <input type="text" id="clientName" required placeholder="Full Name">
+                </div>
+                <div class="form-group">
+                    <label>Phone / WhatsApp</label>
+                    <input type="tel" id="clientPhone" placeholder="9876543210">
+                </div>
+                <div class="form-group">
+                    <label>Business / Brand Name</label>
+                    <input type="text" id="clientBusiness" placeholder="Brand Name">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="clientNotes" rows="3" placeholder="Preferences or details..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary ripple full-width-btn">Save Client</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div class="modal-overlay" id="projectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="projectModalTitle" style="font-size: 1.1rem;">Add New Project</h3>
+                <button class="close-modal" onclick="closeModal('projectModal')">&times;</button>
+            </div>
+            <form id="projectForm" onsubmit="saveProject(event)">
+                <input type="hidden" id="projectId">
+                <div class="form-group">
+                    <label>Select Client *</label>
+                    <select id="projectClientId" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Project Title *</label>
+                    <input type="text" id="projectTitle" required placeholder="Project Name">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select id="projectType">
+                            <option value="Video Editing">Video Editing</option>
+                            <option value="Promotion">Promotion</option>
+                            <option value="Both">Both</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="projectPriority">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="projectStatus">
+                            <option value="Pending">Pending</option>
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Deadline</label>
+                        <input type="date" id="projectDeadline" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Payment (₹)</label>
+                        <input type="number" id="projectPayment" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Cost/Investment (₹)</label>
+                        <input type="number" id="projectInvestment" required min="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Payment Status</label>
+                    <select id="projectPaidStatus">
+                        <option value="Pending">Pending / Unpaid</option>
+                        <option value="Paid">Fully Paid</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary ripple full-width-btn">Save Project</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
