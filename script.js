@@ -80,7 +80,7 @@ let projects = JSON.parse(localStorage.getItem('prostudio_projects')) || [];
 let isInitialized = localStorage.getItem('prostudio_initialized');
 
 if (!isInitialized) {
-    clients = [{ id: 'c1', name: 'Aman Verma', phone: '9876543210', business: 'FitX Gym', notes: 'Fitness reels' }];
+    clients = [{ id: 'c1', name: 'Aman Verma', phone: '9876543210', business: 'FitX Gym', address: 'Mumbai', notes: 'Fitness reels' }];
     projects = [{ id: 'p1', clientId: 'c1', title: 'Gym Commercial Ad', type: 'Video Editing', priority: 'High', status: 'Active', deadline: getFutureDate(3), payment: 6000, investment: 800, paidStatus: 'Paid' }];
     localStorage.setItem('prostudio_initialized', 'true');
     saveToStorage();
@@ -167,11 +167,12 @@ function saveClient(e) {
     const name = document.getElementById('clientName').value.trim();
     const phone = document.getElementById('clientPhone').value.trim();
     const business = document.getElementById('clientBusiness').value.trim();
+    const address = document.getElementById('clientAddress').value.trim();
     const notes = document.getElementById('clientNotes').value.trim();
 
     const index = clients.findIndex(c => c.id === id);
-    if(index > -1) clients[index] = { id, name, phone, business, notes };
-    else clients.push({ id, name, phone, business, notes });
+    if(index > -1) clients[index] = { id, name, phone, business, address, notes };
+    else clients.push({ id, name, phone, business, address, notes });
 
     saveToStorage();
     closeModal('clientModal');
@@ -184,6 +185,7 @@ function editClient(id) {
     document.getElementById('clientName').value = c.name;
     document.getElementById('clientPhone').value = c.phone;
     document.getElementById('clientBusiness').value = c.business;
+    document.getElementById('clientAddress').value = c.address || '';
     document.getElementById('clientNotes').value = c.notes;
     
     document.getElementById('clientModalTitle').innerText = 'Edit Client';
@@ -208,13 +210,18 @@ function openWhatsApp(phone) {
 function renderClients() {
     const tbody = document.getElementById('clientsTableBody');
     const search = document.getElementById('clientSearch').value.toLowerCase();
-    const filtered = clients.filter(c => c.name.toLowerCase().includes(search) || (c.business && c.business.toLowerCase().includes(search)));
+    const filtered = clients.filter(c => 
+        c.name.toLowerCase().includes(search) || 
+        (c.business && c.business.toLowerCase().includes(search)) ||
+        (c.address && c.address.toLowerCase().includes(search))
+    );
 
     tbody.innerHTML = filtered.map(c => `
         <tr>
             <td data-label="Name"><strong>${escapeHtml(c.name)}</strong></td>
             <td data-label="Phone">${escapeHtml(c.phone || '-')}</td>
             <td data-label="Business">${escapeHtml(c.business || '-')}</td>
+            <td data-label="Address">${escapeHtml(c.address || '-')}</td>
             <td data-label="Notes">${escapeHtml(c.notes || '-')}</td>
             <td data-label="Actions">
                 <div class="action-btns">
