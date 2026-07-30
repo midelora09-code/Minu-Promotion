@@ -154,7 +154,7 @@
                 <div class="table-toolbar">
                     <div class="search-box">
                         <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted)"></i>
-                        <input type="text" id="clientSearch" placeholder="Search client name or business..." onkeyup="renderClients()">
+                        <input type="text" id="clientSearch" placeholder="Search client name, business, or address..." onkeyup="renderClients()">
                     </div>
                 </div>
                 <table>
@@ -163,6 +163,7 @@
                             <th>Client Name</th>
                             <th>Phone</th>
                             <th>Business</th>
+                            <th>Address</th>
                             <th>Notes</th>
                             <th>Actions</th>
                         </tr>
@@ -342,6 +343,11 @@
                 <div class="form-group">
                     <label>Store / Business / Brand Name</label>
                     <input type="text" id="clientBusiness" placeholder="Brand Name">
+                </div>
+                <!-- Brand Name ke baad Address input field -->
+                <div class="form-group">
+                    <label>Client Address</label>
+                    <input type="text" id="clientAddress" placeholder="City, Location, or Address">
                 </div>
                 <div class="form-group">
                     <label>Notes</label>
